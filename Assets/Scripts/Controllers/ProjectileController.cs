@@ -1,33 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(SphereCollider))]
 public class ProjectileController : MonoBehaviour
 {
     protected float flySpeed = 1f;
     protected float damage = 10f;
     protected float size = 1f;
-    protected float range = 5f;
+    protected float range = 9f;
     protected Vector3 startPosition;
+    protected Vector3 direction;
 
-    public void Attack(float _fSpd, float _dmg, float _size, float _rng)
+    public void Attack(Vector3 _pos, Vector3 _cursorPos)
+    {
+        transform.position = _pos;
+        startPosition = _pos;
+
+        direction = ((_cursorPos - _pos).normalized) * flySpeed;
+    }
+
+    public void Attack(float _fSpd, float _dmg, float _size, float _rng, Vector3 _pos, Vector3 _cursorPos)
     {
         this.flySpeed = _fSpd;
         this.damage = _dmg;
         this.size = _size;
         this.range = _rng;
-        startPosition = this.transform.position;
-    }
-    private void OnCollisionEnter2D(Collision2D _collision)
-    {
-        if (_collision != null && _collision.gameObject.CompareTag("Enemy"))
-        {
-            PlayerController player = _collision.gameObject.GetComponent<PlayerController>();
-            player.ModifyHp(damage);
 
-            Destroy(this.gameObject);
-            // this.gameObject.SetActive(false);
+        transform.position = _pos;
+        startPosition = _pos;
+
+        direction = (_cursorPos - _pos).normalized * flySpeed;
+    }
+
+    private void OnTriggerEnter(Collider _collision)
+    {
+        Debug.Log(_collision);
+
+        if (_collision != null && _collision.CompareTag("Enemy"))
+        {
+            EnemyController enemy = _collision.GetComponent<EnemyController>();
+            enemy.ModifyHp(damage * -1);
+
+            this.gameObject.SetActive(false);
         }
     }
+
+    private void Update()
+    {
+        transform.position += direction * Time.deltaTime * 10f;
+        if (Mathf.Abs(Vector3.Distance(transform.position, startPosition)) > range) 
+        {
+            Debug.Log(Mathf.Abs(Vector3.Distance(transform.position, startPosition)));
+            this.gameObject.SetActive(false);
+        }
+    }
+
 }

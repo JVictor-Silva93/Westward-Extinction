@@ -10,11 +10,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Player playerStats;
     [SerializeField] private GameStateSO gameState;
     [SerializeField] private GameObject movePoint;
+    [SerializeField] private GameObject cursor;
+    [SerializeField] private Rigidbody playerRigidBody;
     private Animator animator;
 
     // weapon related variables
     // [SerializeField] private WeaponSO weapon;
-    [SerializeField] private ProjectileController projectilePrefab;
+    [SerializeField] private ProjectileController projectile;
     private bool canAttack = true;
 
     // controller variables
@@ -33,13 +35,12 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
     }
 
-    private void Start()
-    {
-        var p = Instantiate(projectilePrefab, transform);
-    }
-
     private void Update()
     {
+        // set cursor position to cursor position, will require support for gamepad
+        var cursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        cursor.transform.position = new(cursorPos.x, cursorPos.y, 0f);
+
         // checks if the GameState is proper
         if (gameState.state == GameState.combat)
         {
@@ -59,13 +60,13 @@ public class PlayerController : MonoBehaviour
                 if (input != Vector2.zero)
                 {
                     movePoint.transform.position = new Vector3(
-                    controller.transform.position.x + input.x * 0.5f,   // x pos
-                    controller.transform.position.y + input.y * 0.5f,   // y pos
+                    playerRigidBody.position.x + input.x * 0.5f,   // x pos
+                    playerRigidBody.position.y + input.y * 0.5f,   // y pos
                     0f);                                                // z pos
 
                     animator.SetFloat("moveX", input.x);
                     animator.SetFloat("moveY", input.y);
-                    controller.transform.position = Vector3.MoveTowards(transform.position,
+                    playerRigidBody.position = Vector3.MoveTowards(playerRigidBody.position,
                         movePoint.transform.position, playerStats.moveSpeed * Time.deltaTime);
                 }
             }
@@ -84,32 +85,25 @@ public class PlayerController : MonoBehaviour
     {
         input = _context.ReadValue<Vector2>();
     }
-
     public void OnInteract(InputAction.CallbackContext _context)
     {
-        Debug.Log("before");
         interact = _context.action.triggered;
-
-        Debug.Log("after");
     }
-
     public void OnAttack(InputAction.CallbackContext _context)
     {
-        Debug.Log("will shoot: " + shoot);
         shoot = _context.action.triggered;
-        Debug.Log("shot" + shoot);
     }
 
     public IEnumerator FireWeapon()
     {
-        Debug.Log("can attack: " + canAttack);
         if (canAttack)
         {
             canAttack = false;
-            Debug.Log("Attack");
-            ProjectileManager.Instance.InstantiateProjectile(projectilePrefab, transform); // idk im tired
-            // do math to set its right vector towards the target position
-            // loop instantiate with an offset that accounts for number of projectiles
+            projectile = ProjectilePool.SharedInstance.GetPooledProjectiles(); // idk im tired
+            projectile.gameObject.SetActive(true);
+            projectile.Attack(playerRigidBody.position, cursor.transform.position);
+            
+            // loop definition with an offset that accounts for number of projectiles
             // if distance between start pos and current pos becomes greater than the range,
             // deactivate/destroy projectile
             yield return new WaitForSeconds(0.5f); // take the weapon cooldown as the input
@@ -125,28 +119,28 @@ public class PlayerController : MonoBehaviour
         var interactPos = transform.position + facingDir;
 
         // checks if the over lapping box is interactable
-        var collider = Physics2D.OverlapBox(interactPos, new Vector2(0.2f, 0.2f), interactables);
-        if (collider != null)
+        var collider = Physics.OverlapSphere(interactPos, 0.2f, interactables);
+        foreach (var collision in collider)
         {
-            new WaitForEndOfFrame();
-            animator.SetBool("isMoving", false); // sets player movement to idle
-            collider.GetComponent<Interactable>()?.Interact(); 
-            // runs interact function from the interactable if a val
-
-            Debug.Log("Interact Successful!");
-        } else
-            Debug.Log("Interact Failed.");
+            if (collision.GetComponent<Interactable>() != null)
+            {
+                animator.SetBool("isMoving", false); // sets player movement to idle
+                collision.GetComponent<Interactable>()?.Interact();
+                Debug.Log("Interact Successful!");
+            }
+        }
     }
 
     private bool IsTraversable(Vector3 _targetPos)
     {
-        if (Physics2D.OverlapBox(_targetPos, new Vector2(0.2f, 0.2f), interactables))
+        if (Physics.OverlapSphere(_targetPos, 0.2f, interactables) != null)
             return false;
         return true;
     }
 
     public void ModifyHp(float _value)
     {
+        Debug.Log("Player HP: " + playerStats.hp);
         if (playerStats.hp + _value >= playerStats.maxHp)
             playerStats.hp = playerStats.maxHp;
         else if (playerStats.hp + _value <= 0)
