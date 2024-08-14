@@ -12,10 +12,6 @@ public class ProjectilePool : MonoBehaviour
     private void Awake()
     {
         SharedInstance = this;
-    }
-
-    private void Start()
-    {
         pooledProjectiles = new();
         ProjectileController tmp;
         for (int i = 0; i < amountToPool; i++)
