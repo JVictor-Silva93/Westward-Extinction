@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872a8fe398024274e9370aaeae63e45d, type: 3}
+  m_Name: Triceratops
+  m_EditorClassIdentifier: 
+  objectID: 3be30b1d-9dc5-4917-af61-db00b1609b3c
+  enemyName: Triceratops
+  maxHp: 65
+  speed: 60
+  damage: 67
+  cooldown: 5
+  canCarryDrBarnum: 0
+  hasKnockbackAbility: 1
+  hasSidePushAbility: 0
+  debuffsPlayerDamage: 0
+  isStealthy: 0
+  enemyPrefab: {fileID: 0}

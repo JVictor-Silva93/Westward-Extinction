@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872a8fe398024274e9370aaeae63e45d, type: 3}
+  m_Name: Raptor
+  m_EditorClassIdentifier: 
+  objectID: e5956fc2-7389-4d5a-b9bf-74e9378f43a4
+  enemyName: Raptor
+  maxHp: 35
+  speed: 72
+  damage: 35
+  cooldown: 5
+  canCarryDrBarnum: 0
+  hasKnockbackAbility: 0
+  hasSidePushAbility: 0
+  debuffsPlayerDamage: 0
+  isStealthy: 0
+  enemyPrefab: {fileID: 0}

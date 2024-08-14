@@ -8,9 +8,15 @@ public class EnemySO : ObjectIDSO
     //public Sprite sprite;
     //public Animator animator;
 
-    public float maxHp;
+    public string enemyName;
+    public int maxHp;
     public float speed;
-    public float damage;
+    public int damage;
     public float cooldown;
-
+    public bool canCarryDrBarnum;
+    public bool hasKnockbackAbility;
+    public bool hasSidePushAbility;
+    public bool debuffsPlayerDamage;
+    public bool isStealthy;
+    public GameObject enemyPrefab; // Reference to the enemy's prefab
 }

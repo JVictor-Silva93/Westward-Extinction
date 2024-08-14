@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872a8fe398024274e9370aaeae63e45d, type: 3}
+  m_Name: Stegosaurus
+  m_EditorClassIdentifier: 
+  objectID: 7a203733-b052-460f-9beb-0dac3e4cf265
+  enemyName: Stegosaurus
+  maxHp: 68
+  speed: 34
+  damage: 32
+  cooldown: 5
+  canCarryDrBarnum: 0
+  hasKnockbackAbility: 0
+  hasSidePushAbility: 0
+  debuffsPlayerDamage: 1
+  isStealthy: 0
+  enemyPrefab: {fileID: 0}
