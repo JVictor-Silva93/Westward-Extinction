@@ -14,11 +14,14 @@ public class chestController : MonoBehaviour, Interactable
 
     public void Interact()
     {
-        // open chest sequence
-        sprite.color = Color.red;
-        Debug.Log("Opened Chest");
+        if (!isOpened)
+        {
+            // open chest sequence
+            sprite.color = Color.red;
+            Debug.Log("Opened Chest");
 
-        isOpened = true;
-        // add treasure
+            isOpened = true;
+            // add treasure
+        }
     }
 }
