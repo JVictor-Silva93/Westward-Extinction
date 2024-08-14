@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
         if (canAttack)
         {
             canAttack = false;
-            projectile = ProjectilePool.SharedInstance.GetPooledProjectiles(); // idk im tired
+            projectile = ProjectilePool.SharedInstance.GetPooledProjectiles();
             projectile.gameObject.SetActive(true);
             projectile.Attack(playerRigidBody.position, cursor.transform.position);
             

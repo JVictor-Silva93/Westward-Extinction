@@ -50,7 +50,6 @@ public class ProjectileController : MonoBehaviour
         transform.position += direction * Time.deltaTime * 10f;
         if (Mathf.Abs(Vector3.Distance(transform.position, startPosition)) > range) 
         {
-            Debug.Log(Mathf.Abs(Vector3.Distance(transform.position, startPosition)));
             this.gameObject.SetActive(false);
         }
     }
