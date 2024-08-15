@@ -62,8 +62,6 @@ public class EnemyController : MonoBehaviour
             Debug.Log("Enemy is Dead");
             this.gameObject.SetActive(false);
             // Spawn two enemies for every 1 that dies
-            EnemySpawnManager.Instance.SpawnEnemy();
-            EnemySpawnManager.Instance.SpawnEnemy();
         }
         else
             hp += _value;

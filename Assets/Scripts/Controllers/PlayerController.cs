@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,7 +23,8 @@ public class PlayerController : MonoBehaviour
 
     // controller variables
     private CharacterController controller;
-    private Vector2 input;
+    private Vector2 moveInput;
+    private Vector2 aimInput;
     private bool interact = false;
     private bool shoot = false;
 
@@ -29,10 +32,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask collisions;
     [SerializeField] private LayerMask interactables;
 
+    static public List<PlayerController> players;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+
+        if (players == null )
+        {
+            players = new List<PlayerController>();
+        }
+
+        players.Add(this);
     }
 
     private void Update()
@@ -52,20 +64,18 @@ public class PlayerController : MonoBehaviour
 
             // Player movement 
             {
-                if (Mathf.Abs(input.x) > 0.1f || Mathf.Abs(input.y) > 0.1f)
+                if (Mathf.Abs(moveInput.x) > 0.1f || Mathf.Abs(moveInput.y) > 0.1f)
                     animator.SetBool("isMoving", true);
                 else
                     animator.SetBool("isMoving", false);
 
-                if (input != Vector2.zero)
+                if (moveInput != Vector2.zero)
                 {
                     movePoint.transform.position = new Vector3(
-                    playerRigidBody.position.x + input.x * 0.5f,   // x pos
-                    playerRigidBody.position.y + input.y * 0.5f,   // y pos
+                    playerRigidBody.position.x + moveInput.x * 0.5f,   // x pos
+                    playerRigidBody.position.y + moveInput.y * 0.5f,   // y pos
                     0f);                                                // z pos
 
-                    animator.SetFloat("moveX", input.x);
-                    animator.SetFloat("moveY", input.y);
                     playerRigidBody.position = Vector3.MoveTowards(playerRigidBody.position,
                         movePoint.transform.position, playerStats.moveSpeed * Time.deltaTime);
                 }
@@ -83,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext _context)
     {
-        input = _context.ReadValue<Vector2>();
+        moveInput = _context.ReadValue<Vector2>();
     }
     public void OnInteract(InputAction.CallbackContext _context)
     {
@@ -93,6 +103,14 @@ public class PlayerController : MonoBehaviour
     {
         shoot = _context.action.triggered;
     }
+    public void OnAim(InputAction.CallbackContext _context)
+    {
+        aimInput = _context.ReadValue<Vector2>();
+
+        animator.SetFloat("moveX", aimInput.x);
+        animator.SetFloat("moveY", aimInput.y);
+    }
+
 
     public IEnumerator FireWeapon()
     {
@@ -101,8 +119,26 @@ public class PlayerController : MonoBehaviour
             canAttack = false;
             projectile = ProjectilePool.SharedInstance.GetPooledProjectiles();
             projectile.gameObject.SetActive(true);
-            projectile.Attack(playerRigidBody.position, cursor.transform.position);
+            projectile.ProjectileDireciton(transform.position, aimInput);
             
+            // loop definition with an offset that accounts for number of projectiles
+            // if distance between start pos and current pos becomes greater than the range,
+            // deactivate/destroy projectile
+            yield return new WaitForSeconds(0.5f); // take the weapon cooldown as the input
+            canAttack = true;
+        }
+        yield return null;
+    }
+
+    public IEnumerator FireWeaponController()
+    {
+        if (canAttack)
+        {
+            canAttack = false;
+            projectile = ProjectilePool.SharedInstance.GetPooledProjectiles();
+            projectile.gameObject.SetActive(true);
+            projectile.Attack(playerRigidBody.position, cursor.transform.position);
+
             // loop definition with an offset that accounts for number of projectiles
             // if distance between start pos and current pos becomes greater than the range,
             // deactivate/destroy projectile

@@ -7,8 +7,10 @@ public class EnemySpawnManager : MonoBehaviour
     public static EnemySpawnManager Instance;
 
     [SerializeField] private EnemyController tempEnemy;
-    [SerializeField] private List<PlayerController> players;
     [SerializeField] private List<EnemySO> enemies;
+
+    private float currentSpawnTime;
+    [SerializeField] private int spawnTime;
 
     private void Awake()
     {
@@ -22,13 +24,23 @@ public class EnemySpawnManager : MonoBehaviour
 
         // random spawning of enemies, and they will target one player at random
         tempEnemy.SpawnEnemy(enemies[Random.Range(0, enemies.Count)],
-            players[Random.Range(0, players.Count)]);
+            PlayerController.players[Random.Range(0, PlayerController.players.Count)]);
 
     }
 
-    private void Start()
+    private void Update()
     {
-        SpawnEnemy();
+        currentSpawnTime += Time.deltaTime;
+
+        if (currentSpawnTime > spawnTime) 
+        {
+            currentSpawnTime -= spawnTime;
+
+            if (PlayerController.players.Count > 0)
+            {
+                SpawnEnemy();
+            }
+        }
     }
 
 }

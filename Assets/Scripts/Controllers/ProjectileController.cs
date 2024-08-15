@@ -32,6 +32,14 @@ public class ProjectileController : MonoBehaviour
         direction = (_cursorPos - _pos).normalized * flySpeed;
     }
 
+    public void ProjectileDireciton(Vector3 _pos, Vector2 dir)
+    {
+        transform.position = _pos;
+        startPosition = _pos;
+
+        direction = dir;
+    }
+
     private void OnTriggerEnter(Collider _collision)
     {
         Debug.Log(_collision);
