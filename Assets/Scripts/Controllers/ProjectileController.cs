@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProjectileController : MonoBehaviour
 {
     protected float flySpeed = 1f;
-    protected float damage = 10f;
+    protected int damage = 10;
     protected float size = 1f;
     protected float range = 9f;
     protected Vector3 startPosition;
@@ -19,7 +19,7 @@ public class ProjectileController : MonoBehaviour
         direction = ((_cursorPos - _pos).normalized) * flySpeed;
     }
 
-    public void Attack(float _fSpd, float _dmg, float _size, float _rng, Vector3 _pos, Vector3 _cursorPos)
+    public void Attack(float _fSpd, int _dmg, float _size, float _rng, Vector3 _pos, Vector3 _cursorPos)
     {
         this.flySpeed = _fSpd;
         this.damage = _dmg;
