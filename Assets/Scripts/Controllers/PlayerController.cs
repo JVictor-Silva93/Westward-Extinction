@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 [System.Serializable]
@@ -33,6 +35,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask interactables;
 
     static public List<PlayerController> players;
+    [SerializeField] private PlayableDirector playableDirector;
 
     private void Awake()
     {
@@ -174,15 +177,34 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
-    public void ModifyHp(float _value)
+    public void ModifyHp(int _value)
     {
         Debug.Log("Player HP: " + playerStats.hp);
         if (playerStats.hp + _value >= playerStats.maxHp)
             playerStats.hp = playerStats.maxHp;
         else if (playerStats.hp + _value <= 0)
+        {
             Debug.Log("Player is Dead");
+            GameOver(); 
+        }
         else
             playerStats.hp += _value;
+    }
+
+    // Game Over setup, Works in conjunction with NotifyOnFinish
+    private void GameOver()
+    {
+        StartCoroutine(NotifyOnFinish());
+    }
+
+    private IEnumerator NotifyOnFinish()
+    {
+        playableDirector.Play();
+        while (playableDirector.state == PlayState.Playing)
+        {
+            yield return null;
+        }
+        SceneManager.LoadScene("MainMenu");
     }
 
     public Player PlayerStats { get; private set; }

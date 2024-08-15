@@ -7,10 +7,10 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] PlayerController controller;
 
-    [SerializeField] float maxHp = 10f;
-    [SerializeField] float hp;
+    [SerializeField] int maxHp = 10;
+    [SerializeField] int hp;
     [SerializeField] float speed = 1f;
-    [SerializeField] float damage = 10f;
+    [SerializeField] int damage = 10;
     [SerializeField] float attackCooldown = 1f;
     [SerializeField] private bool canAttack = true;
 
@@ -53,7 +53,7 @@ public class EnemyController : MonoBehaviour
         StartCoroutine(Attack(_collision));
     }
 
-    public void ModifyHp(float _value)
+    public void ModifyHp(int _value)
     {
         if (hp + _value >= maxHp)
             hp = maxHp;
