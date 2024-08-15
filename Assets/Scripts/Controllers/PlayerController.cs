@@ -14,9 +14,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Player playerStats;
     [SerializeField] private GameStateSO gameState;
     [SerializeField] private GameObject movePoint;
-    [SerializeField] private GameObject cursor;
     [SerializeField] private Rigidbody playerRigidBody;
     private Animator animator;
+    private GameObject cursor;
 
     // weapon related variables
     // [SerializeField] private WeaponSO weapon;
@@ -37,10 +37,14 @@ public class PlayerController : MonoBehaviour
     static public List<PlayerController> players;
     [SerializeField] private PlayableDirector playableDirector;
 
+    private PlayerInput playerInput;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInput>();
+        cursor = GameObject.Find("P_Cursor");
 
         if (players == null )
         {
@@ -55,6 +59,13 @@ public class PlayerController : MonoBehaviour
         // set cursor position to cursor position, will require support for gamepad
         var cursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         cursor.transform.position = new(cursorPos.x, cursorPos.y, 0f);
+
+        if (playerInput.currentControlScheme == "Keyboard")
+        {
+            Vector2 lookDir = cursor.transform.position - transform.position;
+            animator.SetFloat("moveX", lookDir.x);
+            animator.SetFloat("moveY", lookDir.y);
+        }
 
         // checks if the GameState is proper
         if (gameState.state == GameState.combat)
@@ -87,7 +98,11 @@ public class PlayerController : MonoBehaviour
             // Shooting
             if (shoot)
             {
-                StartCoroutine(FireWeapon());
+                if (playerInput.currentControlScheme == "Controller")
+                    StartCoroutine(FireWeaponController());
+                else if (playerInput.currentControlScheme == "Keyboard")
+                    StartCoroutine(FireWeaponKeyboard());
+
                 shoot = false;
             }
 
@@ -114,8 +129,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("moveY", aimInput.y);
     }
 
-
-    public IEnumerator FireWeapon()
+    public IEnumerator FireWeaponController()
     {
         if (canAttack)
         {
@@ -133,7 +147,7 @@ public class PlayerController : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator FireWeaponController()
+    public IEnumerator FireWeaponKeyboard()
     {
         if (canAttack)
         {
