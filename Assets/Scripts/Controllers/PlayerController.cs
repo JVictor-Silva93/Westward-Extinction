@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
         else if (playerStats.hp + _value <= 0)
         {
             Debug.Log("Player is Dead");
-            GameOver(); 
+            //GameOver(); 
         }
         else
             playerStats.hp += _value;
