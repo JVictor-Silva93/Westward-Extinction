@@ -14,6 +14,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float attackCooldown = 1f;
     [SerializeField] private bool canAttack = true;
 
+    public EnemyCounter enemyCounter;
+
+    private void Awake()
+    {
+        enemyCounter = FindObjectOfType<EnemyCounter>();
+    }
+
     private void Start()
     {
         canAttack = true;
@@ -62,6 +69,7 @@ public class EnemyController : MonoBehaviour
             Debug.Log("Enemy is Dead");
             this.gameObject.SetActive(false);
             // Spawn two enemies for every 1 that dies
+            enemyCounter.IncrementEnemyCount();
         }
         else
             hp += _value;
