@@ -5,8 +5,14 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    
+    [SerializeField] private PlayerSO playerSO;
+
     public Slider slider;
+
+    private void Awake()
+    {
+        playerSO.healthBar = this;
+    }
 
     public void SetMaxHealth(int health)
     {

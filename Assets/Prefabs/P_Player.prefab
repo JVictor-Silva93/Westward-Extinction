@@ -82,12 +82,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2673083ea6edced4891c55eb542c29d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats:
-    playerName: Default
-    moveSpeed: 5
-    aimSpeed: 1
-    maxHp: 100
-    hp: 100
   gameState: {fileID: 11400000, guid: 07ce13cc1c7dd3a4b9931f9c79b042f1, type: 2}
   movePoint: {fileID: 4622126729334493410}
   playerRigidBody: {fileID: 3276007423130384287}
@@ -98,7 +92,7 @@ MonoBehaviour:
   interactables:
     serializedVersion: 2
     m_Bits: 128
-  playableDirector: {fileID: 0}
+  playerList: {fileID: 11400000, guid: a27ab2e106211d8448632fd07d0d0fcc, type: 2}
 --- !u!143 &2788634654949664659
 CharacterController:
   m_ObjectHideFlags: 0

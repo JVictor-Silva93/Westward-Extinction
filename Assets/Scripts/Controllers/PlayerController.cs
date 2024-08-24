@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
@@ -11,7 +10,6 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     // player variables
-    [SerializeField] private Player playerStats;
     [SerializeField] private GameStateSO gameState;
     [SerializeField] private GameObject movePoint;
     [SerializeField] private Rigidbody playerRigidBody;
@@ -24,7 +22,6 @@ public class PlayerController : MonoBehaviour
     private bool canAttack = true;
 
     // controller variables
-    private CharacterController controller;
     private Vector2 moveInput;
     private Vector2 aimInput;
     private bool interact = false;
@@ -35,23 +32,33 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask interactables;
 
     static public List<PlayerController> players;
-    [SerializeField] private PlayableDirector playableDirector;
 
     private PlayerInput playerInput;
+
+    public PlayerListSO playerList;
+    private PlayerSO myData;
+    private HealthBar healthBar;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        controller = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         cursor = GameObject.Find("P_Cursor");
 
-        if (players == null )
+        if (players == null)
         {
             players = new List<PlayerController>();
         }
 
         players.Add(this);
+
+        myData = playerList.playerSOs[playerInput.playerIndex];
+        myData.Init("Larry");
+    }
+
+    private void Start()
+    {
+        healthBar = myData.healthBar;
     }
 
     private void Update()
@@ -91,7 +98,7 @@ public class PlayerController : MonoBehaviour
                     0f);                                                // z pos
 
                     playerRigidBody.position = Vector3.MoveTowards(playerRigidBody.position,
-                        movePoint.transform.position, playerStats.moveSpeed * Time.deltaTime);
+                        movePoint.transform.position, myData.moveSpeed * Time.deltaTime);
                 }
             }
 
@@ -193,33 +200,22 @@ public class PlayerController : MonoBehaviour
 
     public void ModifyHp(int _value)
     {
-        Debug.Log("Player HP: " + playerStats.hp);
-        if (playerStats.hp + _value >= playerStats.maxHp)
-            playerStats.hp = playerStats.maxHp;
-        else if (playerStats.hp + _value <= 0)
+        myData.hp += _value;
+
+        bool ifWeTakeDamageAndDontDie = myData.hp > 0;
+        bool ifWeTakeDamageAndDie = myData.hp <= 0;
+
+        Debug.Log("Player HP: " + myData.hp);
+        if (ifWeTakeDamageAndDontDie)
         {
+            healthBar.SetHealth(myData.hp);
+        }
+        else if (ifWeTakeDamageAndDie)
+        {
+            healthBar.SetHealth(0);
+
             Debug.Log("Player is Dead");
-            //GameOver(); 
+            myData.Death();
         }
-        else
-            playerStats.hp += _value;
     }
-
-    // Game Over setup, Works in conjunction with NotifyOnFinish
-    private void GameOver()
-    {
-        StartCoroutine(NotifyOnFinish());
-    }
-
-    private IEnumerator NotifyOnFinish()
-    {
-        playableDirector.Play();
-        while (playableDirector.state == PlayState.Playing)
-        {
-            yield return null;
-        }
-        SceneManager.LoadScene("MainMenu");
-    }
-
-    public Player PlayerStats { get; private set; }
 }
